@@ -31,14 +31,6 @@ def load_raw_data(country: str, data_dir: Path = DEFAULT_DATA_DIR) -> pd.DataFra
  
  
 def clean_data(df: pd.DataFrame, category_map: dict) -> pd.DataFrame:
-    """
-    Làm sạch dữ liệu:
-    - Loại video lỗi / đã bị xóa (video_error_or_removed = True)
-    - Loại dòng thiếu channel_title / category_id / trending_date
-    - Map category_id -> category_name
-    - Chuẩn hóa trending_date (format gốc: YY.DD.MM)
-    - Loại video trùng trong cùng 1 ngày (đề phòng crawl lặp)
-    """
     df = df.copy()
  
     if "video_error_or_removed" in df.columns:
@@ -61,10 +53,6 @@ def clean_data(df: pd.DataFrame, category_map: dict) -> pd.DataFrame:
  
  
 def load_and_clean(country: str, data_dir: Path = DEFAULT_DATA_DIR) -> pd.DataFrame:
-    """
-    Hàm tiện ích gọi 1 lần: load raw data + category map + clean.
-    country: "US" hoặc "GB"
-    """
     data_dir = Path(data_dir)
     df_raw = load_raw_data(country, data_dir)
     category_map = load_category_map(data_dir / f"{country}_category_id.json")
@@ -73,9 +61,6 @@ def load_and_clean(country: str, data_dir: Path = DEFAULT_DATA_DIR) -> pd.DataFr
  
  
 def save_cleaned(df: pd.DataFrame, country: str, output_dir: Path) -> Path:
-    """
-    Lưu dữ liệu đã làm sạch ra output/tables/{country}_cleaned.csv
-    """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / f"{country}_cleaned.csv"

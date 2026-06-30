@@ -1,253 +1,75 @@
 # YouTube Trending Network Analysis
 
-> Phân tích mạng xã hội YouTube Trending (US) sử dụng các mô hình Random Graph, Small-world và Preferential Attachment — kèm so sánh đa quốc gia (US vs GB).
+##  Project Overview
+This project applies **Network Science** and **Graph Theory** to analyze the ecosystem of YouTube Trending Videos. By examining when and how channels trend together within the same time period and category, we construct a channel co-trending network to uncover the hidden structural mechanics of digital attention.
+
+> **Core Concept:** > Two YouTube channels are connected by an edge if their videos appear together in the trending dataset within the same time window and content category.
+
+The project evaluates network topology, statistical distributions, community structures, centrality measures, and compares empirical results against theoretical graph models.
 
 ---
 
-## Thành viên nhóm
-
-| Thành viên | Vai trò | Nhiệm vụ chính |
-|---|---|---|
-| Bao | Model Comparison & Integration | ER / BA / WS models, cross-country comparison, merge kết quả |
-| Tho | Data & Graph Construction | Load data, làm sạch, xây graph, export |
-| Huy | Network Analysis | Degree distribution, power-law, centrality, community |
-| Trung | Visualization & Report | Figures, PyVis, report, slide |
-
----
-
-## Mô tả đề tài
-
-Đề tài phân tích cấu trúc mạng lưới các YouTube channel trending tại Mỹ (US) thông qua các mô hình lý thuyết đồ thị kinh điển:
-
-- **Erdős–Rényi (ER)** — Random Graph Model
-- **Barabási–Albert (BA)** — Preferential Attachment
-- **Watts–Strogatz (WS)** — Small-world Network
-
-Sau khi phân tích mạng US, nhóm áp dụng cùng phương pháp lên dataset GB để đánh giá tính tổng quát của mô hình (*cross-country comparison*).
+##  Project Objectives
+The pipeline is designed to answer several key research questions:
+* **Influence:** Which YouTube channels act as structural hubs and major information brokers?
+* **Topology:** Does the YouTube trending network follow a scale-free distribution ($P(k) \sim k^{-\alpha}$)?
+* **Connectivity:** Does the network exhibit small-world characteristics?
+* **Segmentation:** How do channels cluster into distinct, specialized communities?
+* **Validation:** How does the empirical YouTube network compare with classic synthetic network models (ER, BA, WS)?
 
 ---
 
-## Dataset
+##  Dataset Description
+The analysis utilizes the **YouTube Trending Videos Dataset** covering two major regions:
+* 🇺🇸 **United States (US)**
+* 🇬🇧 **Great Britain (GB)**
 
-| File | Nguồn | Mô tả |
-|---|---|---|
-| `USvideos.csv` | Kaggle | ~40,000 trending videos tại Mỹ |
-| `GBvideos.csv` | Kaggle | ~38,000 trending videos tại Anh |
-| `US_category_id.json` | Kaggle | Mapping category_id → tên |
-| `GB_category_id.json` | Kaggle | Mapping category_id → tên |
-
-**Link download:** https://www.kaggle.com/datasets/datasnaek/youtube-new
-
-> Sau khi tải về, đặt tất cả file vào thư mục `data/`
+### Key Features Used:
+* `video_title`, `channel_title`, `category_id`
+* `trending_date`
+* Engagement metrics: `views`, `likes`, `comment_count`
 
 ---
 
-## Cấu trúc thư mục
+##  Network Construction
+The system models the data as an undirected, weighted graph $G = (V, E)$, defined by:
+* **Vertices ($V$):** Unique YouTube channels.
+* **Edges ($E$):** Co-trending relationships between two channels.
+* **Edge Weight ($W_{uv}$):** The frequency of co-occurring trending events between channel $u$ and channel $v$.
 
-```
-youtube-network/
+To filter out noise and weak statistical co-occurrences, an edge threshold is enforced:
+$$\text{weight}(u, v) \ge 2$$
+
+---
+
+##  Technologies Used
+* **Language:** Python 3.x
+* **Data Engineering:** `pandas`, `numpy`
+* **Network Science:** `networkx`, `python-louvain`
+* **Statistical Modeling:** `powerlaw`
+* **Visualization:** `matplotlib`, `seaborn`, `pyvis` (Interactive HTML graphs)
+
+---
+
+##  Project Structure
+```text
+YOUTUBE_TRENDING/
 │
-├── data/                          ← Đặt CSV + JSON vào đây
-│   ├── USvideos.csv
-│   ├── GBvideos.csv
-│   ├── US_category_id.json
-│   └── GB_category_id.json
+├── data/
+│   ├── US.csv
+│   └── GB.csv
 │
-├── notebooks/                     ← Jupyter notebooks theo từng bước
-│   ├── 01_data_graph.ipynb        ← Member 2: Load, clean, build graph
-│   ├── 02_analysis.ipynb          ← Member 3: Metrics, power-law, community
-│   └── 03_models.ipynb            ← Leader: ER/BA/WS + US vs GB comparison
+├── src/
+│   ├── loader.py          # Data ingestion & pre-processing
+│   ├── graph_builder.py   # Edge filtering & Graph instantiation
+│   ├── metrics.py         # Topological, powerlaw & modularity calculations
+│   └── visualization.py   # Matplotlib, Seaborn & PyVis layouts
 │
-├── src/                           ← Module Python tái sử dụng
-│   ├── loader.py                  ← Load & làm sạch dữ liệu
-│   ├── graph_builder.py           ← Xây weighted graph
-│   ├── metrics.py                 ← Tính network metrics + power-law
-│   ├── models.py                  ← Sinh ER / BA / WS + so sánh
-│   └── visualization.py           ← Tất cả plots + interactive graph
+├── output/
+│   ├── figures/           # Distribution and model comparison plots
+│   ├── graphs/            # Exported GraphML & Interactive HTML files
+│   ├── metrics/           # Raw JSON metadata
+│   └── tables/            # Centrality rankings (.csv)
 │
-├── output/                        ← Toàn bộ kết quả export vào đây
-│   ├── figures/                   ← PNG plots (dùng trong report/slide)
-│   │   ├── degree_distribution.png
-│   │   ├── clustering_vs_degree.png
-│   │   ├── model_comparison.png
-│   │   └── communities.png
-│   ├── graphs/                    ← Interactive HTML graph
-│   │   └── interactive_graph.html
-│   └── tables/                    ← CSV + JSON kết quả số liệu
-│       ├── basic_metrics.json
-│       ├── centrality.csv
-│       ├── model_comparison.csv
-│       └── powerlaw.json
-│
-├── report/                        ← Báo cáo cuối kỳ
-│   ├── report.docx
-│   └── slides.pptx
-│
-├── main.py                        ← Chạy toàn bộ pipeline 1 lệnh
-├── requirements.txt               ← Danh sách thư viện
+├── main.py                # Pipeline execution entry point
 └── README.md
-```
-
----
-
-## Cài đặt
-
-### Yêu cầu
-
-- Python 3.9+
-- pip
-
-### Cài thư viện
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Cách chạy
-
-### Chạy toàn bộ pipeline (khuyên dùng)
-
-```bash
-python main.py
-```
-
-Pipeline sẽ tự động chạy theo thứ tự:
-
-```
-[1] Load & clean USvideos.csv + US_category_id.json
-[2] Build weighted graph (node = channel, edge = co-trending)
-[3] Compute network metrics (clustering, diameter, path length, ...)
-[4] Compute centrality (degree, betweenness, PageRank)
-[5] Fit power-law + KS-test
-[6] Generate ER / BA / WS synthetic graphs
-[7] Compare real vs synthetic
-[8] Plot all figures → output/figures/
-[9] Export interactive graph → output/graphs/interactive_graph.html
-[10] Export metrics tables → output/tables/
-```
-
-### Chạy từng notebook riêng lẻ
-
-```bash
-jupyter notebook notebooks/01_data_graph.ipynb
-jupyter notebook notebooks/02_analysis.ipynb
-jupyter notebook notebooks/03_models.ipynb
-```
-
----
-
-## Phương pháp
-
-### 1. Xây dựng graph
-
-- **Node** = YouTube channel
-- **Edge** = hai channel cùng trending trong cùng `category_id` và cùng `trending_date`
-- **Weight** = số lần co-trending
-
-### 2. Network metrics tính toán
-
-| Metric | Ý nghĩa |
-|---|---|
-| Degree distribution | Phân phối bậc của node |
-| Power-law exponent (α) | Kiểm định rich-get-richer |
-| Clustering coefficient | Mức độ "bạn của bạn cũng là bạn" |
-| Average shortest path | Kiểm chứng small-world |
-| Graph diameter | Đường kính mạng |
-| Betweenness centrality | Channel đóng vai trò cầu nối |
-| PageRank | Ảnh hưởng thực sự trong mạng |
-| Modularity (Louvain) | Chất lượng phân cụm cộng đồng |
-
-### 3. So sánh mô hình
-
-So sánh graph thực tế với 3 mô hình sinh:
-
-| Mô hình | Đặc trưng |
-|---|---|
-| Erdős–Rényi (ER) | Random, không có hub |
-| Barabási–Albert (BA) | Preferential attachment, có hub, power-law |
-| Watts–Strogatz (WS) | Small-world, clustering cao |
-
-### 4. So sánh đa quốc gia (US vs GB)
-
-Áp dụng cùng phương pháp phân tích lên GBvideos.csv và so sánh các chỉ số mạng giữa hai quốc gia để đánh giá tính tổng quát của mô hình.
-
----
-
-## Giới hạn phương pháp (cần lưu ý khi trình bày)
-
-Vì edge được định nghĩa là "hai channel cùng trending trong cùng category và cùng ngày", mỗi nhóm (category, ngày) sẽ tạo thành một **clique đầy đủ** trong graph. Hệ quả là clustering coefficient cao và average shortest path thấp có thể là **hệ quả toán học của cách xây edge**, chứ không hẳn phản ánh đúng cấu trúc xã hội "small-world" thực sự. Khi trình bày kết quả, nhóm nên:
-
-- Nêu rõ giới hạn này trong phần thảo luận, thay vì khẳng định chắc chắn 100% mạng có tính small-world.
-- Cân nhắc thử thêm phương án edge có ngưỡng (chỉ giữ cạnh có weight ≥ k lần co-trending) để xem kết quả có thay đổi không.
-- Khi fit power-law, nói rõ dùng degree có trọng số (weighted) hay không trọng số, vì α sẽ khác nhau.
-
----
-
-## Kết quả đầu ra
-
-| File | Mô tả |
-|---|---|
-| `output/figures/degree_distribution.png` | Log-log plot + power-law fit |
-| `output/figures/clustering_vs_degree.png` | Clustering coefficient vs degree |
-| `output/figures/model_comparison.png` | Real vs ER / BA / WS |
-| `output/figures/communities.png` | Community structure (Louvain) |
-| `output/graphs/interactive_graph.html` | Mở bằng browser để demo |
-| `output/tables/basic_metrics.json` | Toàn bộ network metrics |
-| `output/tables/centrality.csv` | Degree / betweenness / PageRank |
-| `output/tables/model_comparison.csv` | Bảng so sánh các mô hình |
-| `output/tables/powerlaw.json` | Kết quả kiểm định power-law |
-
----
-
-## Công nghệ sử dụng
-
-| Công cụ | Mục đích |
-|---|---|
-| `NetworkX` | Xây dựng và phân tích graph |
-| `powerlaw` | Fitting và kiểm định power-law (KS-test) |
-| `python-louvain` | Community detection (Louvain algorithm) |
-| `PyVis` | Interactive graph visualization |
-| `Matplotlib / Seaborn` | Static plots |
-| `Pandas` | Xử lý dữ liệu |
-
----
-
-## Định hướng mở rộng (tùy chọn, nếu còn thời gian)
-
-Các thuật toán dưới đây không bắt buộc nhưng có thể nâng chất lượng phân tích nếu nhóm muốn đào sâu thêm — chi tiết đánh giá ở phần trả lời bên dưới.
-
-| Hạng mục | Thuật toán gợi ý | Mục đích |
-|---|---|---|
-| Centrality bổ sung | Assortativity coefficient, k-core decomposition, HITS (Hub/Authority) | Hiểu rõ hơn cấu trúc hub-periphery |
-| Community detection | Leiden algorithm | Khắc phục nhược điểm resolution limit của Louvain |
-| Kiểm định preferential attachment | Theo dõi degree growth theo thời gian (`trending_date`) | Kiểm chứng trực tiếp cơ chế BA thay vì chỉ so khớp kết quả tĩnh |
-| Link prediction | Adamic-Adar, Jaccard coefficient | Kiểm định giả thuyết preferential attachment bằng dự đoán cạnh |
-| Robustness | Percolation analysis (random vs targeted node removal) | Kiểm chứng tính dễ tổn thương đặc trưng của mạng scale-free |
-| Null model chặt hơn | Configuration model | So sánh công bằng hơn ER khi cần giữ nguyên degree sequence |
-
----
-
-## Câu hỏi giảng viên thường hỏi
-
-**Q: Tại sao chọn co-trending làm định nghĩa edge?**  
-A: Hai channel trending cùng ngày, cùng category phản ánh sự cạnh tranh/tương đồng về nội dung — đây là quan hệ mạng xã hội có ý nghĩa thực tế trong hệ sinh thái YouTube.
-
-**Q: Mô hình nào fit thực tế nhất?**  
-A: BA model (Barabási–Albert) — vì degree distribution của mạng thực tế tuân theo power-law (α ≈ 2–3), phù hợp với cơ chế preferential attachment: channel lớn ngày càng trending nhiều hơn.
-
-**Q: Small-world có xuất hiện không?**  
-A: Có thể kiểm chứng qua chỉ số sigma = (C/C_rand) / (L/L_rand). Nếu sigma > 1 thì xác nhận small-world. Tuy nhiên cần lưu ý giới hạn ở phần "Giới hạn phương pháp" phía trên khi diễn giải kết quả này.
-
-**Q: Tại sao so sánh US vs GB?**  
-A: Để kiểm tra tính tổng quát (generalizability) của mô hình — nếu BA model fit tốt cả US lẫn GB thì kết luận về preferential attachment có giá trị học thuật cao hơn.
-
----
-
-## Tài liệu tham khảo
-
-1. Barabási, A.-L., & Albert, R. (1999). Emergence of scaling in random networks. *Science*, 286(5439), 509–512.
-2. Watts, D. J., & Strogatz, S. H. (1998). Collective dynamics of 'small-world' networks. *Nature*, 393, 440–442.
-3. Erdős, P., & Rényi, A. (1960). On the evolution of random graphs. *Publications of the Mathematical Institute of the Hungarian Academy of Sciences*.
-4. Kaggle Dataset: [Trending YouTube Video Statistics](https://www.kaggle.com/datasets/datasnaek/youtube-new)
