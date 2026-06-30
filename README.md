@@ -175,6 +175,16 @@ So sánh graph thực tế với 3 mô hình sinh:
 
 ---
 
+## Giới hạn phương pháp (cần lưu ý khi trình bày)
+
+Vì edge được định nghĩa là "hai channel cùng trending trong cùng category và cùng ngày", mỗi nhóm (category, ngày) sẽ tạo thành một **clique đầy đủ** trong graph. Hệ quả là clustering coefficient cao và average shortest path thấp có thể là **hệ quả toán học của cách xây edge**, chứ không hẳn phản ánh đúng cấu trúc xã hội "small-world" thực sự. Khi trình bày kết quả, nhóm nên:
+
+- Nêu rõ giới hạn này trong phần thảo luận, thay vì khẳng định chắc chắn 100% mạng có tính small-world.
+- Cân nhắc thử thêm phương án edge có ngưỡng (chỉ giữ cạnh có weight ≥ k lần co-trending) để xem kết quả có thay đổi không.
+- Khi fit power-law, nói rõ dùng degree có trọng số (weighted) hay không trọng số, vì α sẽ khác nhau.
+
+---
+
 ## Kết quả đầu ra
 
 | File | Mô tả |
@@ -204,6 +214,21 @@ So sánh graph thực tế với 3 mô hình sinh:
 
 ---
 
+## Định hướng mở rộng (tùy chọn, nếu còn thời gian)
+
+Các thuật toán dưới đây không bắt buộc nhưng có thể nâng chất lượng phân tích nếu nhóm muốn đào sâu thêm — chi tiết đánh giá ở phần trả lời bên dưới.
+
+| Hạng mục | Thuật toán gợi ý | Mục đích |
+|---|---|---|
+| Centrality bổ sung | Assortativity coefficient, k-core decomposition, HITS (Hub/Authority) | Hiểu rõ hơn cấu trúc hub-periphery |
+| Community detection | Leiden algorithm | Khắc phục nhược điểm resolution limit của Louvain |
+| Kiểm định preferential attachment | Theo dõi degree growth theo thời gian (`trending_date`) | Kiểm chứng trực tiếp cơ chế BA thay vì chỉ so khớp kết quả tĩnh |
+| Link prediction | Adamic-Adar, Jaccard coefficient | Kiểm định giả thuyết preferential attachment bằng dự đoán cạnh |
+| Robustness | Percolation analysis (random vs targeted node removal) | Kiểm chứng tính dễ tổn thương đặc trưng của mạng scale-free |
+| Null model chặt hơn | Configuration model | So sánh công bằng hơn ER khi cần giữ nguyên degree sequence |
+
+---
+
 ## Câu hỏi giảng viên thường hỏi
 
 **Q: Tại sao chọn co-trending làm định nghĩa edge?**  
@@ -213,7 +238,7 @@ A: Hai channel trending cùng ngày, cùng category phản ánh sự cạnh tran
 A: BA model (Barabási–Albert) — vì degree distribution của mạng thực tế tuân theo power-law (α ≈ 2–3), phù hợp với cơ chế preferential attachment: channel lớn ngày càng trending nhiều hơn.
 
 **Q: Small-world có xuất hiện không?**  
-A: Có thể kiểm chứng qua chỉ số sigma = (C/C_rand) / (L/L_rand). Nếu sigma > 1 thì xác nhận small-world.
+A: Có thể kiểm chứng qua chỉ số sigma = (C/C_rand) / (L/L_rand). Nếu sigma > 1 thì xác nhận small-world. Tuy nhiên cần lưu ý giới hạn ở phần "Giới hạn phương pháp" phía trên khi diễn giải kết quả này.
 
 **Q: Tại sao so sánh US vs GB?**  
 A: Để kiểm tra tính tổng quát (generalizability) của mô hình — nếu BA model fit tốt cả US lẫn GB thì kết luận về preferential attachment có giá trị học thuật cao hơn.
