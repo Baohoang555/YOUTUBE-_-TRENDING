@@ -80,33 +80,11 @@ Thumbs.db
 # ==================================================
 # Data Files
 # ==================================================
-
-# Raw datasets
-data/*.csv
-data/*.json
-data/*.xlsx
-
 # Large files
 *.zip
 *.rar
 
 
-# ==================================================
-# Output Generated Files
-# ==================================================
-
-# Analysis outputs
-output/
-
-# Figures
-figures/
-
-# Graph exports
-*.graphml
-*.gexf
-
-# Interactive visualization
-*.html
 
 
 # ==================================================
