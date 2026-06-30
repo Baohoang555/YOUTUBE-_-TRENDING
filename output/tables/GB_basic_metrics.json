@@ -1,0 +1,11 @@
+{
+  "num_nodes": 1617,
+  "num_edges": 64840,
+  "density": 0.04962741172076391,
+  "average_clustering": 0.765690451907343,
+  "num_connected_components": 5,
+  "largest_cc_size": 1575,
+  "largest_cc_fraction": 0.974025974025974,
+  "average_shortest_path_length": 2.8178205360924546,
+  "diameter": 7
+}

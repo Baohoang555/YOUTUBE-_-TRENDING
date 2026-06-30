@@ -1,0 +1,8 @@
+{
+  "alpha": 2.637265666889141,
+  "xmin": 70.0,
+  "ks_distance": 0.0785340572429295,
+  "loglikelihood_ratio_vs_exponential": -4.178814642055454,
+  "p_value_vs_exponential": 2.930323850988395e-05,
+  "favors_power_law": false
+}
