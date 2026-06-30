@@ -50,26 +50,3 @@ $$\text{weight}(u, v) \ge 2$$
 * **Visualization:** `matplotlib`, `seaborn`, `pyvis` (Interactive HTML graphs)
 
 ---
-
-##  Project Structure
-```text
-YOUTUBE_TRENDING/
-│
-├── data/
-│   ├── US.csv
-│   └── GB.csv
-│
-├── src/
-│   ├── loader.py          # Data ingestion & pre-processing
-│   ├── graph_builder.py   # Edge filtering & Graph instantiation
-│   ├── metrics.py         # Topological, powerlaw & modularity calculations
-│   └── visualization.py   # Matplotlib, Seaborn & PyVis layouts
-│
-├── output/
-│   ├── figures/           # Distribution and model comparison plots
-│   ├── graphs/            # Exported GraphML & Interactive HTML files
-│   ├── metrics/           # Raw JSON metadata
-│   └── tables/            # Centrality rankings (.csv)
-│
-├── main.py                # Pipeline execution entry point
-└── README.md
