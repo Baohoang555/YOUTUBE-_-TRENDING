@@ -135,9 +135,6 @@ Thumbs.db
 # NetworkX serialized graphs
 graphs/
 
-# Generated metrics
-metrics/
-
 
 # ==================================================
 # Keep Project Documentation
